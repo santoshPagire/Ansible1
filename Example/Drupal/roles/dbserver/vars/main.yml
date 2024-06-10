@@ -1,0 +1,7 @@
+---
+# vars file for dbserver
+root_password: Your_root_pass
+admin_user: User_name
+admin_password: user_pass
+db_name: your_db_name
+password_validation_policy: 1    

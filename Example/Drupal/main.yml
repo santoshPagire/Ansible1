@@ -1,0 +1,20 @@
+---
+- hosts: All
+  gather_facts: true
+  become: yes
+  # tasks:
+  #   - name: update_cache
+  #     apt:
+  #       update_cache: yes
+  
+- hosts: web
+  become: true
+  roles: 
+    - apache
+    - php
+    - drupal
+   
+- hosts: db
+  become: true
+  roles:
+    - dbserver

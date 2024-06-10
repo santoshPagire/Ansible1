@@ -1,0 +1,5 @@
+---
+# vars file for drupal
+DOCUMENT_ROOT: /var/www/html/your_web_name/
+SERVER_NAME: example.com
+SERVER_ALIAS: www.example.com

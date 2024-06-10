@@ -1,0 +1,2 @@
+web ansible_host=192.168.**.* ansible_connection=ssh ansible_user=user_name ansible_ssh_pass=user_pass
+db ansible_host=192.168.**.* ansible_connection=ssh ansible_user=user_name ansible_ssh_pass=user_pass

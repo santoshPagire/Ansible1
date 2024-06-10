@@ -1,0 +1,53 @@
+---
+# tasks file for drupal
+- name: Download and extract Drupal
+  get_url:
+    url: "https://ftp.drupal.org/files/projects/drupal-8.9.1.tar.gz"
+    dest: /tmp/drupal-8.9.1.tar.gz
+
+- name: Extract Drupal 
+  unarchive:
+    src: /tmp/drupal-8.9.1.tar.gz
+    dest: /var/www/html/
+    remote_src: yes
+
+    
+- name: Check if drupal directory exists
+  stat:
+    path: /var/www/html/drupal
+  register: drupal_dir
+
+- name: Move Drupal directory to drupal
+  shell: mv /var/www/html/drupal-8.9.1 /var/www/html/drupal
+  when: drupal_dir.stat.exists == False
+
+
+- name: Set correct permissions for Drupal directory
+  file:
+    path: /var/www/html/drupal
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+
+
+- name: Create Apache configuration file for Drupal
+  template:
+    src: drupal.conf.j2
+    dest: /etc/apache2/sites-available/drupal.conf
+
+- name: Enable Drupal site
+  command: a2ensite drupal.conf
+
+- name: Enable Apache modules
+  command: "a2enmod {{ item }}"
+  with_items:
+    - rewrite
+    - env
+    - dir
+    - mime
+
+- name: Restart Apache2
+  service:
+    name: apache2
+    state: restarted

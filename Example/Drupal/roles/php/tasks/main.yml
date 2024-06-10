@@ -1,0 +1,63 @@
+---
+# tasks file for php
+- name: Install required packages for PHP
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - software-properties-common
+    - ca-certificates
+
+- name: Add Ondrej PHP repository
+  apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+
+- name: Update apt package index
+  apt:
+    update_cache: yes
+
+- name: Install PHP 7.2 and required modules
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - php7.2
+    - libapache2-mod-php7.2
+    - php7.2-common
+    - php7.2-mbstring
+    - php7.2-xmlrpc
+    - php7.2-soap
+    - php7.2-gd
+    - php7.2-xml
+    - php7.2-intl
+    - php7.2-mysql
+    - php7.2-cli
+    - php7.2-zip
+    - php7.2-curl
+    - mysql-client
+
+- name: Modify php.ini
+  lineinfile:
+    path: /etc/php/7.2/apache2/php.ini
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^file_uploads = ', line: 'file_uploads = On' }
+    - { regexp: '^allow_url_fopen = ', line: 'allow_url_fopen = On' }
+    - { regexp: '^memory_limit = ', line: 'memory_limit = 256M' }
+    - { regexp: '^upload_max_filesize = ', line: 'upload_max_filesize = 100M' }
+    - { regexp: '^max_execution_time = ', line: 'max_execution_time = 360' }
+    - { regexp: '^date.timezone = ', line: 'date.timezone = America/Chicago' }
+
+- name: Restart Apache2
+  service:
+    name: apache2
+    state: restarted
+
+- name: Create phpinfo.php file
+  copy:
+    content: "<?php phpinfo(); ?>"
+    dest: /var/www/html/phpinfo.php
